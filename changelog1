@@ -1,0 +1,23 @@
+CS153 Lab 1
+Authors: Annie Chiou, Ethan Valdez
+
+Log 4/18
+
+TODO: Update exit()
+1. Add exit status field to process structure in proc.h
+2. Change exit system call signature to void exit(int status)
+3. Add code in exit() function to update the exit status of the process
+    a) Other than this, no other changes should be necessary
+4. Update all system calls utilizing exit() to match the new prototype
+    a) See files: user.h, defs.h, sysproc.c, proc.c
+    b) Note: usertests.c is almost 2000 lines long and has lots of exit() and 
+    wait() syscalls; TA told us that we can just remove it from the Makefile 
+    and not modify it to make our lives easier.
+
+DONE:
+1. (attempted to) Get familiar with exit() syscall flow
+
+TODO: Update wait()
+1. Update wait system call signature to int wait(int* status)
+    a) Note that wait system call can receive NULL as an argument. In this case 
+    the child's exit status must be discarded
