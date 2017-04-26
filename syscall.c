@@ -85,7 +85,9 @@ extern int sys_exit(void);
 extern int sys_fork(void);
 extern int sys_fstat(void);
 extern int sys_getpid(void);
+extern int sys_hello(void); 
 extern int sys_kill(void);
+extern int sys_lab1(void); // Lab 1 Test Program
 extern int sys_link(void);
 extern int sys_mkdir(void);
 extern int sys_mknod(void);
@@ -96,9 +98,9 @@ extern int sys_sbrk(void);
 extern int sys_sleep(void);
 extern int sys_unlink(void);
 extern int sys_wait(void);
+extern int sys_waitpid(void); // Lab 1
 extern int sys_write(void);
 extern int sys_uptime(void);
-extern int sys_hello(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -123,6 +125,8 @@ static int (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_hello]   sys_hello,
+[SYS_lab1]    sys_lab1,
+[SYS_waitpid] sys_waitpid,
 };
 
 void

@@ -15,15 +15,21 @@ sys_fork(void)
 
 int
 sys_exit(void)
-{
-  exit();
+{ 
+  int status; 
+  argint(0, &status);
+
+  exit(status);
   return 0;  // not reached
 }
 
 int
 sys_wait(void)
 {
-  return wait();
+  int* status;
+  argptr(0, (char**)&status, 1);
+
+  return wait(status);
 }
 
 int
@@ -93,6 +99,15 @@ sys_uptime(void)
 int
 sys_hello(void)
 {
-	hello();
-	return 0;
+  hello();
+  return 0;
+}
+
+int
+sys_lab1()
+{
+  exitWait();
+  waitPid();
+  PScheduler();
+  return 0;
 }

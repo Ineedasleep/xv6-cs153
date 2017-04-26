@@ -3,8 +3,8 @@ struct rtcdate;
 
 // system calls
 int fork(void);
-int exit(void) __attribute__((noreturn));
-int wait(void);
+int exit(int status) __attribute__((noreturn));
+int wait(int* status);
 int pipe(int*);
 int write(int, void*, int);
 int read(int, void*, int);
@@ -23,7 +23,11 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-int hello(void);
+void hello(void);
+int exitWait(void); // lab1.c
+int waitPid(void); // lab1.c 
+int PScheduler(void); // lab1.c
+int waitpid(int pid, int* status, int options); // Lab 1
 
 // ulib.c
 int stat(char*, struct stat*);

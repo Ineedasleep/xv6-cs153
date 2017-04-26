@@ -180,11 +180,13 @@ fork(void)
   return pid;
 }
 
-// Exit the current process.  Does not return.
+// Exit the current process, maintaining an exit status. 
+// Status is 0 upon successful exit. 
+// Does not return.
 // An exited process remains in the zombie state
-// until its parent calls wait() to find out it exited.
+// until its parent calls wait(NULL) to find out it exited.
 void
-exit(void)
+exit(int status)
 {
   struct proc *p;
   int fd;
@@ -207,7 +209,7 @@ exit(void)
 
   acquire(&ptable.lock);
 
-  // Parent might be sleeping in wait().
+  // Parent might be sleeping in wait(NULL).
   wakeup1(proc->parent);
 
   // Pass abandoned children to init.
@@ -219,6 +221,9 @@ exit(void)
     }
   }
 
+  // Set exit status of process
+  proc->exitstatus = status;
+  
   // Jump into the scheduler, never to return.
   proc->state = ZOMBIE;
   sched();
@@ -228,7 +233,7 @@ exit(void)
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
 int
-wait(void)
+wait(int* status)
 {
   struct proc *p;
   int havekids, pid;
@@ -243,6 +248,7 @@ wait(void)
       havekids = 1;
       if(p->state == ZOMBIE){
         // Found one.
+        *status = p->exitstatus;
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;
@@ -484,8 +490,35 @@ procdump(void)
   }
 }
 
+// Optional lab - Prints message from kernel.
 void
 hello(void)
 {
-	cprintf("\n\n Hello from the kernel space! \n\n");
+  cprintf("\n\n Hello from the kernel space! \n\n");
+}	
+
+
+int
+waitpid(int pid, int* status, int options)
+{
+
+}
+
+// Lab 1 Test Function
+int 
+exitWait(void)
+{
+  return 0;
+}
+
+int 
+waitPid(void)
+{
+  return 0;
+}  
+
+int 
+PScheduler(void)
+{
+  return 0;
 }

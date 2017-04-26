@@ -2,8 +2,7 @@
 #include "stat.h"
 #include "user.h"
 
-int main(int argc, char *argv[])
-{
-	hello();
-	exit();
+int main (int argc, char *argv[]) {
+    hello();
+    exit(0);
 }
