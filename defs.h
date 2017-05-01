@@ -116,11 +116,8 @@ void            userinit(void);
 int             wait(int* status);
 void            wakeup(void*);
 void            yield(void);
-void            hello(void);
-int             exitWait(void); // lab1.c
-int             waitPid(void);  
-int             PScheduler(void);
-int             waitpid(int pid, int* status, int options); // Lab 1
+int             waitpid(int pid, int* status, int options);
+void            setpriority(int priority);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

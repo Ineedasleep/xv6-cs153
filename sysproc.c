@@ -15,10 +15,11 @@ sys_fork(void)
 
 int
 sys_exit(void)
-{ 
-  int status; 
-  argint(0, &status);
+{
+  int status;
 
+  if(argint(0, &status))
+      return -1;
   exit(status);
   return 0;  // not reached
 }
@@ -27,8 +28,9 @@ int
 sys_wait(void)
 {
   int* status;
-  argptr(0, (char**)&status, 1);
 
+  if(argptr(0, (char**)&status, 1) < 0)
+    return -1;
   return wait(status);
 }
 
@@ -97,17 +99,26 @@ sys_uptime(void)
 }
 
 int
-sys_hello(void)
+sys_waitpid(void)
 {
-  hello();
-  return 0;
-}
+  int pid;
+  int* status;
+  int options;
+
+  if(argint(0, &pid) < 0 || argptr(1, (char**)&status, 1) < 0 || argint(3, &options) < 0){
+    return -1;
+  }  
+  return waitpid(pid, status, options);
+ }
 
 int
-sys_lab1()
+sys_setpriority(void)
 {
-  exitWait();
-  waitPid();
-  PScheduler();
+  int priority;
+
+  if(argint(0, &priority))
+      return -1;
+
+  proc->priority = priority;
   return 0;
 }

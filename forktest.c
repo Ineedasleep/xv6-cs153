@@ -4,7 +4,6 @@
 #include "types.h"
 #include "stat.h"
 #include "user.h"
-#include "stddef.h"
 
 #define N  1000
 
@@ -35,13 +34,13 @@ forktest(void)
   }
 
   for(; n > 0; n--){
-    if(wait(NULL) < 0){
+    if(wait(0) < 0){
       printf(1, "wait stopped early\n");
       exit(0);
     }
   }
 
-  if(wait(NULL) != -1){
+  if(wait(0) != -1){
     printf(1, "wait got too many\n");
     exit(0);
   }

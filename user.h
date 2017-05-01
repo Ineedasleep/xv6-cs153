@@ -23,11 +23,8 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-void hello(void);
-int exitWait(void); // lab1.c
-int waitPid(void); // lab1.c 
-int PScheduler(void); // lab1.c
-int waitpid(int pid, int* status, int options); // Lab 1
+int waitpid(int pid, int* status, int options);
+void setpriority(int priority);
 
 // ulib.c
 int stat(char*, struct stat*);

@@ -49,6 +49,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority = 20;
 
   release(&ptable.lock);
 
@@ -180,11 +181,9 @@ fork(void)
   return pid;
 }
 
-// Exit the current process, maintaining an exit status. 
-// Status is 0 upon successful exit. 
-// Does not return.
+// Exit the current process.  Does not return.
 // An exited process remains in the zombie state
-// until its parent calls wait(NULL) to find out it exited.
+// until its parent calls wait(0) to find out it exited.
 void
 exit(int status)
 {
@@ -209,7 +208,7 @@ exit(int status)
 
   acquire(&ptable.lock);
 
-  // Parent might be sleeping in wait(NULL).
+  // Parent might be sleeping in wait(0).
   wakeup1(proc->parent);
 
   // Pass abandoned children to init.
@@ -221,9 +220,9 @@ exit(int status)
     }
   }
 
-  // Set exit status of process
+  // Set process exit status
   proc->exitstatus = status;
-  
+
   // Jump into the scheduler, never to return.
   proc->state = ZOMBIE;
   sched();
@@ -286,17 +285,33 @@ void
 scheduler(void)
 {
   struct proc *p;
+  struct proc *q;
+  int current_priority = 63;
 
   for(;;){
     // Enable interrupts on this processor.
     sti();
+    
+    // Set current priority to lowest possible
+    current_priority = 63;
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
-
+      
+      current_priority = 63;
+      
+      for(q = ptable.proc; q < &ptable.proc[NPROC]; q++){
+        if(q->state != RUNNABLE)
+          continue;
+        if(q->priority < current_priority) {
+          current_priority = q->priority;
+          p = q;
+        }
+      }
+    
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -309,6 +324,7 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       proc = 0;
+      q = 0;
     }
     release(&ptable.lock);
 
@@ -490,35 +506,44 @@ procdump(void)
   }
 }
 
-// Optional lab - Prints message from kernel.
-void
-hello(void)
-{
-  cprintf("\n\n Hello from the kernel space! \n\n");
-}	
-
-
 int
 waitpid(int pid, int* status, int options)
 {
+  struct proc *p;
+  int found;
 
-}
+  acquire(&ptable.lock);
+  for(;;){
+    // Scan through table looking for exited process.
+    found = 0;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->pid != pid)
+        continue;
+      found = 1;
+      if(p->state == ZOMBIE){
+        // Found one.
+        *status = p->exitstatus;
+        pid = p->pid;
+        kfree(p->kstack);
+        p->kstack = 0;
+        freevm(p->pgdir);
+        p->pid = 0;
+        p->parent = 0;
+        p->name[0] = 0;
+        p->killed = 0;
+        p->state = UNUSED;
+        release(&ptable.lock);
+        return pid;
+      }
+    }
 
-// Lab 1 Test Function
-int 
-exitWait(void)
-{
-  return 0;
-}
+    // No point waiting if there is no process.
+    if(!found || proc->killed){
+      release(&ptable.lock);
+      return -1;
+    }
 
-int 
-waitPid(void)
-{
-  return 0;
-}  
-
-int 
-PScheduler(void)
-{
-  return 0;
+    // Wait for process to exit.  (See wakeup1 call in proc_exit.)
+    sleep(proc, &ptable.lock);  //DOC: wait-sleep
+  }
 }

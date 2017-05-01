@@ -1,0 +1,132 @@
+CS153 Lab 1
+Authors: Annie Chiou, Ethan Valdez
+
+PART 1 -- exit() 
+
+***** Update exit() to maintain exit status *****
+
+In file proc.h:
+    In struct proc, added int exitstatus
+
+In files user.h, defs.h:
+    Changed exit() call signature to void exit(int status)
+
+In file sysproc.c
+    In sys_exit(), added following code block:
+        int status;
+        argint(0, &status);
+        exit(status); // changed from exit()
+
+In file proc.c:
+    Changed exit() parameter
+    Added following code block:
+        // Set exit status of process
+        proc->exitstatus = status;
+
+***** Update exit() instances from exit() to exit(0) *****
+
+In file trap.c:
+    In trap(), 4 calls
+
+In file init.c:
+    In main(), 2 calls
+
+In file sh.c:
+    In runcmd(), 4 calls
+    In main(), 1 call
+    In panic(), 1 call
+
+In file test.c
+    In main(), 1 call
+
+In all user files:
+    We ran the following command:
+    find . -type f -print0 | xargs -0 sed -i 's/exit()/exit(0)/g'
+
+
+PART 1 -- wait()
+
+***** Update wait() to pass int* status *****
+
+In files user.h, defs.h:
+    Changed wait() call signature to int wait(int* status)
+
+In file sysproc.c:
+    In sys_wait(), added following code block:
+        int* status;
+        argptr(0, (char**)&status, 1);
+        return wait(status);
+
+In file proc.c:
+    In wait(), added following code block:
+        *status = p->exitstatus;
+
+***** Update wait() instances to wait(NULL) *****
+
+In file init.c:
+    In main(), 1 call
+
+In file sh.c:
+    In runcmd(), 3 calls
+    In main(), 1 call
+
+In all user files (forktest.c, init.c, stressfs.c, usertests.c, sh.c)
+    We ran the following command:
+    find . -type f -print0 | xargs -0 sed -i 's/wait()/wait(NULL)/g'
+
+*Note: had to include "stddef.h" for usage of NULL in all files listed in this
+section
+
+
+PART 1 -- waitpid()
+
+***** Creating waitpid syscall *****
+
+In file usys.S:
+    Added SYSCALL(waitpid)
+
+In files sycall.h, syscall.c:
+    Defined waitpid syscall # and added to array
+
+In files user.h, defs.h:
+    Added int waitpid declarations
+
+In file sysproc.c:
+    Defined int sys_waitpid(void)
+
+In file proc.c:
+    Wrote waitpid(int pid, int* status, int options) definition, essentially 
+    same functionality as wait() except search process table for the process 
+    with the matching PID.
+
+
+PART 2 -- Priority Scheduler
+
+***** Modifying scheduler *****
+
+In file proc.h:
+    In proc struct, added int priority field to hold priority level of process
+
+In file proc.c:
+    In allocproc() function, added following line of code under "found" label:
+        p->priority = 20;
+    This sets the default priority of a new process to 20.
+    
+    In the scheduler() function, added a local int current_priority, a new 
+    proc* q, and a for loop to check the process table for the highest priority
+    process (priorities range from 0 to 63, 0 being the highest priority).
+
+***** Adding setpriority() system call *****
+
+In file usys.S:
+    Added SYSCALL(setpriority)
+
+In files syscall.h, syscall.c:
+    Defined setpriority syscall # and added to array
+
+In files user.h, defs.h:
+    Added void setpriority declarations
+
+In file sysproc.c:
+    Defined int sys_setpriority(void) to set proc->priority to priority level
+    specified by user
