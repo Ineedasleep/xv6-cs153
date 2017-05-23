@@ -119,6 +119,7 @@ sys_setpriority(void)
   if(argint(0, &priority))
       return -1;
 
-  proc->priority = priority;
+  setpriority(priority);
+  // proc->priority = priority;
   return 0;
 }

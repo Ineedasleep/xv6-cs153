@@ -548,3 +548,9 @@ waitpid(int pid, int* status, int options)
     sleep(proc, &ptable.lock);  //DOC: wait-sleep
   }
 }
+
+void
+setpriority(int priority)
+{
+   proc->priority = priority;
+}

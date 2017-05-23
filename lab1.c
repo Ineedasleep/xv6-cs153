@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
   
   
 int exitWait(void) {
-	  int pid, ret_pid, exit_status;
-       int i;
+	int pid, ret_pid, exit_status;
+  int i;
   // use this part to test exit(int status) and wait(int* status)
  
   printf(1, "\n  Step 1: testing exit(int status) and wait(int* status):\n");
@@ -117,7 +117,7 @@ int PScheduler(void){
 	  if (pid > 0 ) {
 		  continue;
     } else if (pid == 0) {
-//	  printf(1, "\n Hello! this is child# %d and I will change my priority to %d \n",getpid(),60-20*i);
+      // printf(1, "\n Hello! this is child# %d and I will change my priority to %d \n",getpid(),60-20*i);
 		  setpriority(60-20*i);	
 		  for (j=0;j<50000;j++) {
 			  for(k=0;k<10000;k++) {
@@ -134,8 +134,9 @@ int PScheduler(void){
 
 	if(pid > 0) {
 		for (i = 0; i <  3; i++) {
-			ret_pid = wait(&exit_status);
-			//printf(1,"\n This is the parent: child with PID# %d has finished with status %d \n",ret_pid,exit_status);
+			// wait(&exit_status);
+      ret_pid = wait(&exit_status);
+			// printf(1,"\n This is the parent: child with PID# %d has finished with status %d \n",ret_pid,exit_status);
 		}
     printf(1,"\n if processes with highest priority finished first then its correct \n");
   }

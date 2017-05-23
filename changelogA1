@@ -61,7 +61,7 @@ In file proc.c:
     In wait(), added following code block:
         *status = p->exitstatus;
 
-***** Update wait() instances to wait(NULL) *****
+***** Update wait() instances to wait(0) *****
 
 In file init.c:
     In main(), 1 call
@@ -72,10 +72,7 @@ In file sh.c:
 
 In all user files (forktest.c, init.c, stressfs.c, usertests.c, sh.c)
     We ran the following command:
-    find . -type f -print0 | xargs -0 sed -i 's/wait()/wait(NULL)/g'
-
-*Note: had to include "stddef.h" for usage of NULL in all files listed in this
-section
+    find . -type f -print0 | xargs -0 sed -i 's/wait()/wait(0)/g'
 
 
 PART 1 -- waitpid()
