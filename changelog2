@@ -1,0 +1,24 @@
+CS153 Lab 2
+Authors: Annie Chiou, Ethan Valdez
+
+PART 1 -- v2p(int virtual, int* physical) syscall
+
+***** Creating v2p() syscall *****
+
+In file usys.S:
+	Added SYSCALL(v2p)
+
+In files sycall.h, sycall.c:
+	Declared extern int v2p(void) and defined v2p syscall # and added to array
+
+In files user.h defs.h:
+	Added int v2p declarations
+
+In file sysproc.c:
+	Defined int sys_v2p(void), including use of argint and argptr to take 
+	arguments from user system call.
+
+In file proc.c:
+	Wrote int sys_v2p(int virtual, int*physical) definition to translate given
+	virtual address to a physical address, storing the physical address in the
+	int* physical.

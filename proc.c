@@ -554,3 +554,29 @@ setpriority(int priority)
 {
    proc->priority = priority;
 }
+
+int
+v2p(int virtual, int* physical)
+{
+  pde_t *pgdir;
+  pde_t *pgtab;
+  pde_t *pde;
+  pde_t *pte;
+
+  // If VA out of range, error
+  if(virtual < 0 || virtual > 0xFFFFFFFF)
+    return -1;
+
+  pgdir = proc->pgdir;
+  pde = &pgdir[PDX(virtual)];
+
+  if(*pde & PTE_P) { // Check if valid page table entry
+    pgtab = (pte_t*)P2V(PTE_ADDR(*pde));
+  } else {
+    return -1;
+  }
+
+  pte = &pgtab[PTX(virtual)];
+  *physical = PTE_ADDR(*pte);
+  return *physical;
+}

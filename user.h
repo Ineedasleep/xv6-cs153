@@ -25,6 +25,7 @@ int sleep(int);
 int uptime(void);
 int waitpid(int pid, int* status, int options);
 void setpriority(int priority);
+int v2p(int virtual, int* physical);
 
 // ulib.c
 int stat(char*, struct stat*);

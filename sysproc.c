@@ -123,3 +123,16 @@ sys_setpriority(void)
   // proc->priority = priority;
   return 0;
 }
+
+int
+sys_v2p(void)
+{
+  int virtual;
+  int* physical;
+
+  if(argint(0, &virtual) < 0 || argptr(1, (char**)&physical, sizeof(int *))) {
+      return -1;
+  }
+  return v2p(virtual, physical);
+
+}
